@@ -162,8 +162,8 @@ const SearchMap: React.FC = () => {
                   style={{ color: "#ff3333" }}
                 />
                 <span className="ml-4 inline-block text-[12px]">
-                  {address?.formatted_address?.length > 75
-                    ? `${address?.formatted_address?.substring(0, 75)}...`
+                  {address?.formatted_address?.length > 100
+                    ? `${address?.formatted_address?.substring(0, 100)}...`
                     : address?.formatted_address || ""}
                 </span>
               </div>
