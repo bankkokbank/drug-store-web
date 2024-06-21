@@ -1,18 +1,19 @@
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { addressStage } from "../../app/atom/map";
-import { getNearByStore } from "../../services/store/store.service";
+import { addreseState } from "../../../app/atom/map";
+import { getNearByStore } from "../../../services/store/store.service";
 import { Input, Typography } from "antd";
 import { LeftOutlined, SearchOutlined } from "@ant-design/icons";
 
-import SiteCard from "./siteCard";
+import SiteCard from "../siteCard";
 
 const { Title } = Typography;
 
 const SiteListStore: React.FC = () => {
   const router = useRouter();
-  const address = useRecoilValue(addressStage);
+  const address = useRecoilValue(addreseState);
+
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState([]);
   const [siteList, setSiteList] = useState([]);
@@ -74,7 +75,7 @@ const SiteListStore: React.FC = () => {
       {filters &&
         filters.length > 0 &&
         filters.map((filter: any, index: number) => {
-          return <SiteCard site={filter} index={index} />;
+          return <SiteCard site={filter} key={index} />;
         })}
     </div>
   );

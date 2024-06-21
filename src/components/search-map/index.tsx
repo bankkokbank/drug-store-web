@@ -14,25 +14,24 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { useRecoilState } from "recoil";
-import { addressStage } from "../../app/atom/map";
+import { addreseState } from "../../app/atom/map";
 import { useRouter } from "next/navigation";
-
+import dynamic from "next/dynamic";
+const SearchMapWithNoSSR = dynamic(() => import("../googleMapComponent"), {
+  ssr: false,
+});
 const SearchMap: React.FC = () => {
   const router = useRouter();
   const { Title } = Typography;
-  const GOOGLE_MAP_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
   const mapContainerStyle = {
     width: "auto",
     height: "100vh",
   };
 
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: GOOGLE_MAP_API_KEY || "",
-    libraries: ["places"],
-  });
   const [marker, setMarker] = useState<any>(null);
   const [search, setSearch] = useState("");
-  const [address, setAddress] = useRecoilState<any>(addressStage);
+  const [address, setAddress] = useRecoilState<any>(addreseState);
   const [suggestions, setSuggestions] = useState<any>([]);
   const [zoom, setZoom] = useState<number>(16);
 
@@ -99,8 +98,6 @@ const SearchMap: React.FC = () => {
     }
   };
 
-  if (loadError) return "Error loading maps";
-  if (!isLoaded) return "Loading Maps";
   if (!marker) return <Spin />;
 
   return (
@@ -136,15 +133,13 @@ const SearchMap: React.FC = () => {
             </ul>
           )}
         </div>
-        <GoogleMap
-          mapContainerStyle={mapContainerStyle}
-          options={{ streetViewControl: false, disableDefaultUI: true }}
+        <SearchMapWithNoSSR
+          setMarker={setMarker}
+          marker={marker}
+          mapStyle={mapContainerStyle}
           zoom={zoom}
-          center={marker}
           onClick={handleMapClick}
-        >
-          {marker && <Marker position={marker} />}
-        </GoogleMap>
+        />
       </div>
       <div className="fixed bottom-0 z-50 max-w-lg w-full h-[200px] bg-[#ffffff]">
         <div className="flex flex-col mx-2 justify-center">
@@ -175,12 +170,13 @@ const SearchMap: React.FC = () => {
             </div>
           </div>
           <Button
-            className={`w-full mt-8 !rounded-xl ${
+            size="large"
+            className={`w-full mt-4 !rounded-xl ${
               !!address ? "!bg-[#31b4f0]" : "!bg-[#EBEBE4]"
             } `}
             onClick={() => {
               if (address) {
-                router.push("/site-list");
+                router.push("/site/list");
               }
             }}
             type="primary"

@@ -1,6 +1,6 @@
 "use client";
 
-import SiteListStore from "../../components/site-list";
+import SiteListStore from "../../../components/site/list";
 
 const SiteListPage = () => {
   return <SiteListStore />;

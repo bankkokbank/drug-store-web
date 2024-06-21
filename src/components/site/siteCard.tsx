@@ -7,21 +7,23 @@ import { Avatar, Button, Divider } from "antd";
 import { changeDateFormattedTime } from "../../common/date";
 import { convertPhoneNumber } from "../../common/phone";
 import { useRouter } from "next/navigation";
+import { useSetRecoilState } from "recoil";
+import { storeState } from "../../app/atom/map";
 
 interface SiteCardProps {
   site: any;
-  index: number;
 }
 
-const SiteCard: React.FC<SiteCardProps> = ({ site, index }) => {
+const SiteCard: React.FC<SiteCardProps> = ({ site }) => {
   const router = useRouter();
+  const setStore = useSetRecoilState(storeState);
   const handleClick = (event: any) => {
     event.preventDefault();
     window.location.href = convertPhoneNumber(site.site_tel);
   };
 
   return (
-    <div key={index} className=" m-4 border rounded-xl p-4 shadow">
+    <div className=" m-4 border rounded-xl p-4 shadow">
       <div className="flex">
         <Avatar
           size={50}
@@ -50,7 +52,7 @@ const SiteCard: React.FC<SiteCardProps> = ({ site, index }) => {
               ) : (
                 <div>
                   <span
-                    className={`mr-2 ${!site.isOpen ? "text-[#ee2f30]" : ""}`}
+                    className={`${!site.isOpen ? "text-[#ee2f30] mr-2" : ""}`}
                   >
                     {!site.isOpen ? "ปิด" : ""}
                   </span>
@@ -88,7 +90,8 @@ const SiteCard: React.FC<SiteCardProps> = ({ site, index }) => {
           className="w-full !rounded-full !text-[#ffffff] !text-xs disabled"
           style={{ color: "#31b4f0" }}
           onClick={() => {
-            router.push("/detaiil");
+            setStore(site);
+            router.push("/site/detaiil");
           }}
           icon={<SendOutlined style={{ color: "#FFFFFF" }} />}
         >
