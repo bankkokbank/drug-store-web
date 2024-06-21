@@ -7,12 +7,14 @@ export const getMaps = async (text: string): Promise<any> => {
   return res.data;
 };
 
-export const getMapsByLocation = async (
-  lat: string,
-  long: string
-): Promise<any> => {
+export const getMapsByLocation = async (location: {
+  lat: number;
+  long: number;
+}): Promise<any> => {
   const res = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/map/search/location?lat=${lat}&long=${long}`
+    `${
+      process.env.NEXT_PUBLIC_API_URL
+    }/map/search/location?location=${JSON.stringify(location)}`
   );
   return res.data;
 };

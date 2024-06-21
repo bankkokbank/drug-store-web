@@ -2,7 +2,7 @@
 
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import { Button, Input, Spin, Typography } from "antd";
-import { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   getDetailMap,
   getMaps,
@@ -14,31 +14,31 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { useRecoilState } from "recoil";
-import { addressStage } from "../../app/atom/map";
+import { addreseState } from "../../app/atom/map";
 import { useRouter } from "next/navigation";
-
-const Map = () => {
+import dynamic from "next/dynamic";
+const SearchMapWithNoSSR = dynamic(() => import("../googleMapComponent"), {
+  ssr: false,
+});
+const SearchMap: React.FC = () => {
   const router = useRouter();
   const { Title } = Typography;
-  const GOOGLE_MAP_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
   const mapContainerStyle = {
     width: "auto",
     height: "100vh",
   };
 
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: GOOGLE_MAP_API_KEY || "",
-    libraries: ["places"],
-  });
   const [marker, setMarker] = useState<any>(null);
   const [search, setSearch] = useState("");
-  const [address, setAddress] = useRecoilState<any>(addressStage);
+  const [address, setAddress] = useRecoilState<any>(addreseState);
   const [suggestions, setSuggestions] = useState<any>([]);
   const [zoom, setZoom] = useState<number>(16);
 
   useEffect(() => {
     handleGetLocation();
   }, [router]);
+
   const handleSearchChange = async (value: any) => {
     setSearch(value);
     if (value.length > 2) {
@@ -63,6 +63,22 @@ const Map = () => {
     setSearch(data?.result?.name);
   };
 
+  const handleMapClick = useCallback(async (event: any) => {
+    setMarker({
+      lat: event.latLng.lat(),
+      lng: event.latLng.lng(),
+    });
+
+    const suggestions = await getMapsByLocation({
+      lat: event.latLng.lat(),
+      long: event.latLng.lng(),
+    });
+
+    if (!!suggestions.status && suggestions.status === "OK") {
+      setAddress(suggestions?.results[0]);
+    }
+  }, []);
+
   const handleGetLocation = async () => {
     if (navigator.geolocation) {
       await navigator.geolocation.getCurrentPosition(async (position) => {
@@ -70,10 +86,10 @@ const Map = () => {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         });
-        const suggestions = await getMapsByLocation(
-          position.coords.latitude.toString(),
-          position.coords.longitude.toString()
-        );
+        const suggestions = await getMapsByLocation({
+          lat: position.coords.latitude,
+          long: position.coords.longitude,
+        });
 
         if (!!suggestions.status && suggestions.status === "OK") {
           setAddress(suggestions?.results[0]);
@@ -82,8 +98,6 @@ const Map = () => {
     }
   };
 
-  if (loadError) return "Error loading maps";
-  if (!isLoaded) return "Loading Maps";
   if (!marker) return <Spin />;
 
   return (
@@ -95,14 +109,11 @@ const Map = () => {
       </div>
       <div className="relative">
         <div className="absolute top-16 left-0 right-0 mx-auto px-2 z-10 ">
-          <Input.Search
+          <Input
+            className="!rounded-full"
+            size="large"
             prefix={<SearchOutlined />}
             value={search}
-            onSearch={() => {
-              if (suggestions && suggestions.length > 0) {
-                handleSuggestionClick(suggestions[0]);
-              }
-            }}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="ค้นหาที่อยู่จัดส่งสินค้า"
           />
@@ -122,14 +133,13 @@ const Map = () => {
             </ul>
           )}
         </div>
-        <GoogleMap
-          mapContainerStyle={mapContainerStyle}
-          options={{ streetViewControl: false, disableDefaultUI: true }}
+        <SearchMapWithNoSSR
+          setMarker={setMarker}
+          marker={marker}
+          mapStyle={mapContainerStyle}
           zoom={zoom}
-          center={marker}
-        >
-          {marker && <Marker position={marker} />}
-        </GoogleMap>
+          onClick={handleMapClick}
+        />
       </div>
       <div className="fixed bottom-0 z-50 max-w-lg w-full h-[200px] bg-[#ffffff]">
         <div className="flex flex-col mx-2 justify-center">
@@ -160,13 +170,13 @@ const Map = () => {
             </div>
           </div>
           <Button
-            className={`w-full mt-8 !rounded-xl ${
+            size="large"
+            className={`w-full mt-4 !rounded-xl ${
               !!address ? "!bg-[#31b4f0]" : "!bg-[#EBEBE4]"
             } `}
             onClick={() => {
               if (address) {
-                console.log("address", address);
-                router.push("/site-list");
+                router.push("/site/list");
               }
             }}
             type="primary"
@@ -179,4 +189,5 @@ const Map = () => {
     </div>
   );
 };
-export default Map;
+
+export default SearchMap;

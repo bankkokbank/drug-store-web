@@ -1,8 +1,9 @@
 "use client";
-import Map from "../../components/search";
+
+import SearchMap from "../../components/search-map";
 
 const DeliveryPage = () => {
-  return <Map />;
+  return <SearchMap />;
 };
 
 export default DeliveryPage;
