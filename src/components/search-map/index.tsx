@@ -2,7 +2,7 @@
 
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import { Button, Input, Spin, Typography } from "antd";
-import { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   getDetailMap,
   getMaps,
@@ -17,7 +17,7 @@ import { useRecoilState } from "recoil";
 import { addressStage } from "../../app/atom/map";
 import { useRouter } from "next/navigation";
 
-const Map = () => {
+const SearchMap: React.FC = () => {
   const router = useRouter();
   const { Title } = Typography;
   const GOOGLE_MAP_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -39,6 +39,7 @@ const Map = () => {
   useEffect(() => {
     handleGetLocation();
   }, [router]);
+
   const handleSearchChange = async (value: any) => {
     setSearch(value);
     if (value.length > 2) {
@@ -63,6 +64,22 @@ const Map = () => {
     setSearch(data?.result?.name);
   };
 
+  const handleMapClick = useCallback(async (event: any) => {
+    setMarker({
+      lat: event.latLng.lat(),
+      lng: event.latLng.lng(),
+    });
+
+    const suggestions = await getMapsByLocation({
+      lat: event.latLng.lat(),
+      long: event.latLng.lng(),
+    });
+
+    if (!!suggestions.status && suggestions.status === "OK") {
+      setAddress(suggestions?.results[0]);
+    }
+  }, []);
+
   const handleGetLocation = async () => {
     if (navigator.geolocation) {
       await navigator.geolocation.getCurrentPosition(async (position) => {
@@ -70,10 +87,10 @@ const Map = () => {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         });
-        const suggestions = await getMapsByLocation(
-          position.coords.latitude.toString(),
-          position.coords.longitude.toString()
-        );
+        const suggestions = await getMapsByLocation({
+          lat: position.coords.latitude,
+          long: position.coords.longitude,
+        });
 
         if (!!suggestions.status && suggestions.status === "OK") {
           setAddress(suggestions?.results[0]);
@@ -95,14 +112,11 @@ const Map = () => {
       </div>
       <div className="relative">
         <div className="absolute top-16 left-0 right-0 mx-auto px-2 z-10 ">
-          <Input.Search
+          <Input
+            className="!rounded-full"
+            size="large"
             prefix={<SearchOutlined />}
             value={search}
-            onSearch={() => {
-              if (suggestions && suggestions.length > 0) {
-                handleSuggestionClick(suggestions[0]);
-              }
-            }}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="ค้นหาที่อยู่จัดส่งสินค้า"
           />
@@ -127,6 +141,7 @@ const Map = () => {
           options={{ streetViewControl: false, disableDefaultUI: true }}
           zoom={zoom}
           center={marker}
+          onClick={handleMapClick}
         >
           {marker && <Marker position={marker} />}
         </GoogleMap>
@@ -165,7 +180,6 @@ const Map = () => {
             } `}
             onClick={() => {
               if (address) {
-                console.log("address", address);
                 router.push("/site-list");
               }
             }}
@@ -179,4 +193,5 @@ const Map = () => {
     </div>
   );
 };
-export default Map;
+
+export default SearchMap;

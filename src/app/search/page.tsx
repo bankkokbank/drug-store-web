@@ -1,8 +1,15 @@
 "use client";
-import Map from "../../components/search";
+import dynamic from "next/dynamic";
+
+const SearchMapWithNoSSR = dynamic(
+  () => import("../../components/search-map"),
+  {
+    ssr: false,
+  }
+);
 
 const DeliveryPage = () => {
-  return <Map />;
+  return <SearchMapWithNoSSR />;
 };
 
 export default DeliveryPage;
