@@ -9,21 +9,32 @@ import { convertPhoneNumber } from "../../common/phone";
 import { useRouter } from "next/navigation";
 import { useSetRecoilState } from "recoil";
 import { storeState } from "../../app/atom/map";
+import React from "react";
 
 interface SiteCardProps {
   site: any;
+  linkout: boolean;
 }
 
-const SiteCard: React.FC<SiteCardProps> = ({ site }) => {
+const SiteCard: React.FC<SiteCardProps> = ({ site, linkout }) => {
   const router = useRouter();
   const setStore = useSetRecoilState(storeState);
-  const handleClick = (event: any) => {
+  const handleClickTel = (event: any) => {
     event.preventDefault();
     window.location.href = convertPhoneNumber(site.site_tel);
   };
 
+  const handleClickMap = (site: any) => {
+    if (linkout) {
+      window.location.href = `https://www.google.com/maps?q=${site?.location?.coordinates[1]},${site?.location?.coordinates[0]}`;
+    } else {
+      setStore(site);
+      router.push("/site/detail");
+    }
+  };
+
   return (
-    <div className=" m-4 border rounded-xl p-4 shadow">
+    <div className="bg-white m-4 border rounded-xl p-4 shadow">
       <div className="flex">
         <Avatar
           size={50}
@@ -78,7 +89,7 @@ const SiteCard: React.FC<SiteCardProps> = ({ site }) => {
           className="w-full !rounded-full !text-xs mr-2"
           style={{ color: "#31b4f0" }}
           disabled={!site.isOpen}
-          onClick={handleClick}
+          onClick={handleClickTel}
           icon={<PhoneOutlined style={{ color: "#31b4f0" }} />}
         >
           {site.site_tel}
@@ -90,8 +101,7 @@ const SiteCard: React.FC<SiteCardProps> = ({ site }) => {
           className="w-full !rounded-full !text-[#ffffff] !text-xs disabled"
           style={{ color: "#31b4f0" }}
           onClick={() => {
-            setStore(site);
-            router.push("/site/detaiil");
+            handleClickMap(site);
           }}
           icon={<SendOutlined style={{ color: "#FFFFFF" }} />}
         >

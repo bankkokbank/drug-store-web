@@ -3,11 +3,11 @@ import { Spin, message } from "antd";
 import React from "react";
 
 interface SiteCardProps {
-  setMarker: any;
   marker: any;
   mapStyle: any;
   zoom: number;
   onClick: any;
+  draggable: boolean;
 }
 
 const GoogleMapComponent: React.FC<SiteCardProps> = ({
@@ -15,6 +15,7 @@ const GoogleMapComponent: React.FC<SiteCardProps> = ({
   mapStyle,
   zoom,
   onClick,
+  draggable,
 }) => {
   const GOOGLE_MAP_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const [messageApi, contextHolder] = message.useMessage();
@@ -34,7 +35,11 @@ const GoogleMapComponent: React.FC<SiteCardProps> = ({
       {isLoaded && (
         <GoogleMap
           mapContainerStyle={mapStyle}
-          options={{ streetViewControl: false, disableDefaultUI: true }}
+          options={{
+            streetViewControl: false,
+            disableDefaultUI: true,
+            draggable: draggable,
+          }}
           zoom={zoom}
           center={marker}
           onClick={onClick}
