@@ -91,7 +91,7 @@ const SiteCard: React.FC<SiteCardProps> = ({ site }) => {
           style={{ color: "#31b4f0" }}
           onClick={() => {
             setStore(site);
-            router.push("/site/detaiil");
+            router.push("/site/detail");
           }}
           icon={<SendOutlined style={{ color: "#FFFFFF" }} />}
         >
