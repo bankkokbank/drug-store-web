@@ -1,6 +1,5 @@
 "use client";
 
-import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import { Button, Input, Spin, Typography } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -98,7 +97,12 @@ const SearchMap: React.FC = () => {
     }
   };
 
-  if (!marker) return <Spin />;
+  if (!marker)
+    return (
+      <div className="w-full flex justify-center items-center">
+        <Spin />
+      </div>
+    );
 
   return (
     <div className="max-w-lg h-full mx-auto">
@@ -134,11 +138,11 @@ const SearchMap: React.FC = () => {
           )}
         </div>
         <SearchMapWithNoSSR
-          setMarker={setMarker}
           marker={marker}
           mapStyle={mapContainerStyle}
           zoom={zoom}
           onClick={handleMapClick}
+          draggable={true}
         />
       </div>
       <div className="fixed bottom-0 z-50 max-w-lg w-full h-[200px] bg-[#ffffff]">

@@ -11,7 +11,7 @@ export default function Home() {
   }, [router]);
 
   return (
-    <div className="text-center m-auto">
+    <div className="flex justify-center items-center">
       <Spin />
     </div>
   );

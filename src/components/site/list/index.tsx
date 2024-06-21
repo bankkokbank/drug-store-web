@@ -51,7 +51,9 @@ const SiteListStore: React.FC = () => {
     <div className="max-w-lg h-full mx-auto">
       <div className="flex justify-between items-center max-w-lg w-full h-[50px] bg-[#ffffff] shadow mb-4">
         <LeftOutlined
-          onClick={() => [router.push("/search")]}
+          onClick={() => {
+            router.back();
+          }}
           className="ml-4"
           style={{ color: "#31b4f0" }}
         />

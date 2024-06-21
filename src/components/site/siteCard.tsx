@@ -34,7 +34,7 @@ const SiteCard: React.FC<SiteCardProps> = ({ site, linkout }) => {
   };
 
   return (
-    <div className=" m-4 border rounded-xl p-4 shadow">
+    <div className="bg-white m-4 border rounded-xl p-4 shadow">
       <div className="flex">
         <Avatar
           size={50}
