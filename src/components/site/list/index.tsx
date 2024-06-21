@@ -75,7 +75,7 @@ const SiteListStore: React.FC = () => {
       {filters &&
         filters.length > 0 &&
         filters.map((filter: any, index: number) => {
-          return <SiteCard site={filter} key={index} />;
+          return <SiteCard site={filter} key={index} linkout={false} />;
         })}
     </div>
   );
