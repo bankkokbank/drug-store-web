@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { LeftOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -8,24 +8,31 @@ import { useRecoilValue } from "recoil";
 import { storeState } from "../../../app/atom/map";
 import { Typography } from "antd";
 import SiteCard from "../siteCard";
-import GoogleMapComponent from "../../googleMapComponent";
 import AddressCard from "../addressCard";
+import dynamic from "next/dynamic";
 
 const { Title } = Typography;
+
+const SearchMapWithNoSSR = dynamic(() => import("../../googleMapComponent"), {
+  ssr: false,
+});
 
 const SiteStoreDetail: React.FC = () => {
   const router = useRouter();
   const store: any = useRecoilValue(storeState);
-  const mapContainerStyle = {
-    width: "auto",
-    height: window.innerHeight - 50,
-  };
+  const [mapStyle, setMapStyle] = useState<any>();
 
+  useEffect(() => {
+    setMapStyle({
+      width: "auto",
+      height: window.innerHeight - 50,
+    });
+  }, []);
   useEffect(() => {
     if (!store) {
       router.push("/search");
     }
-  }, [store]);
+  }, [router]);
 
   return (
     <>
@@ -47,12 +54,12 @@ const SiteStoreDetail: React.FC = () => {
             </Title>
           </div>
           <div className="relative">
-            <GoogleMapComponent
+            <SearchMapWithNoSSR
               marker={{
                 lat: store?.location?.coordinates[1],
                 lng: store?.location?.coordinates[0],
               }}
-              mapStyle={mapContainerStyle}
+              mapStyle={mapStyle}
               zoom={16}
               onClick={() => {}}
               draggable={false}

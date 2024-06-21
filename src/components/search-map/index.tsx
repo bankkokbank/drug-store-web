@@ -23,16 +23,19 @@ const SearchMap: React.FC = () => {
   const router = useRouter();
   const { Title } = Typography;
 
-  const mapContainerStyle = {
-    width: "auto",
-    height: "100vh",
-  };
-
   const [marker, setMarker] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [address, setAddress] = useRecoilState<any>(addreseState);
   const [suggestions, setSuggestions] = useState<any>([]);
   const [zoom, setZoom] = useState<number>(16);
+  const [mapStyle, setMapStyle] = useState<any>();
+
+  useEffect(() => {
+    setMapStyle({
+      width: "auto",
+      height: window.innerHeight - 50,
+    });
+  }, []);
 
   useEffect(() => {
     handleGetLocation();
@@ -139,7 +142,7 @@ const SearchMap: React.FC = () => {
         </div>
         <SearchMapWithNoSSR
           marker={marker}
-          mapStyle={mapContainerStyle}
+          mapStyle={mapStyle}
           zoom={zoom}
           onClick={handleMapClick}
           draggable={true}

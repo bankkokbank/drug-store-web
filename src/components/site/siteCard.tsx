@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useSetRecoilState } from "recoil";
 import { storeState } from "../../app/atom/map";
 import React from "react";
+import MapIcon from "../../../icon/map";
 
 interface SiteCardProps {
   site: any;
@@ -26,7 +27,10 @@ const SiteCard: React.FC<SiteCardProps> = ({ site, linkout }) => {
 
   const handleClickMap = (site: any) => {
     if (linkout) {
-      window.location.href = `https://www.google.com/maps?q=${site?.location?.coordinates[1]},${site?.location?.coordinates[0]}`;
+      const destination = `${site?.location?.coordinates[1]},${site?.location?.coordinates[0]}`;
+      window.open(
+        `http://maps.google.com??saddr=Current+Location&daddr=${destination}&amp;ll=`
+      );
     } else {
       setStore(site);
       router.push("/site/detail");
@@ -98,14 +102,20 @@ const SiteCard: React.FC<SiteCardProps> = ({ site, linkout }) => {
           size="large"
           type="primary"
           disabled={!site.isOpen}
-          className="w-full !rounded-full !text-[#ffffff] !text-xs disabled"
+          className="w-full !bg-[#31b4f0] !rounded-full !text-[#ffffff] !text-xs items-center"
           style={{ color: "#31b4f0" }}
           onClick={() => {
             handleClickMap(site);
           }}
-          icon={<SendOutlined style={{ color: "#FFFFFF" }} />}
+          icon={
+            linkout ? (
+              <SendOutlined style={{ color: "#FFFFFF", rotate: "315deg" }} />
+            ) : (
+              <MapIcon style={{ color: "#FFFFFF" }} />
+            )
+          }
         >
-          แผนที่สาขา
+          {linkout ? "นำทาง" : "แผนที่สาขา"}
         </Button>
       </div>
     </div>
